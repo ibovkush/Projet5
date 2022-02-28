@@ -71,13 +71,13 @@ const choisForm = idForm.value;
     console.log(choisForm);   
 
      //Recuperation des valeurs получение значений//
-// let productOption = {
-//     name: productId.name,
-//     colors: choisForm, 
-//     price: productId,
-//     idProduct: productId._id,
-//     quantite:
-// }
+let productOption = {
+    name: productId.name,
+    colors: choisForm, 
+    price: productId,
+    idProduct: productId._id,
+    quantite:
+}
 
 });
 
