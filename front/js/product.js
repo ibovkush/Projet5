@@ -5,6 +5,8 @@ const urlSearchParams = new URLSearchParams(querryString_url_id);
 
 const productId = urlSearchParams.get("id");
 
+const localStorageCartKey = "p5_cartData";
+
 //recuperer l'information sur le produit//
 
 
@@ -29,57 +31,92 @@ fetch(`http://localhost:3000/api/products/${productId}`).then((response)=>{
             <button id="addToCart">Ajouter au panier</button>
         </div>
         
+            
+
+    `;
+
+
+
+    itemContent.insertAdjacentHTML("afterbegin" ,produitStructure);
+
+    document.querySelector("#colors").insertAdjacentHTML("beforeend", `
+
+        ${product.colors.map((color)=>{
+            
+            return `<option  value=${color}>${color}</option>`;
+
+        })}
+
+    `);
+
+
+    //----Le Panier----корзина//
+    //Récuperation des données получение данных//
+    //ID selection выбор id//
+
+    const colorSelect = document.querySelector("#colors");
+    const quantityInput = document.querySelector("#quantity");
+
+
+    //Button de panier selection кнопка корзины//
+    const btn_Panier = document.querySelector("#addToCart");
+    console.log(btn_Panier);
+
+    // button добавление //
+    btn_Panier.addEventListener("click", (event)=>{
+        event.preventDefault();
+        // if user didn't selected options - do nothing.
+        if (!colorSelect.value || quantityInput.value == 0) {
+            return;
+        }
+        //le Choix d'utilisateur var выбор пользователя//
+      
+            //Recuperation des valeurs получение значений//
+        let productOption = {
+            name: product.name,
+            imageUrl:product.imageUrl,
+            color: colorSelect.value, 
+            price: product.price,
+            id: productId,
+            quantity: quantityInput.value * 1
+        };
+
+        let cartData = []
         
-
-`;
-
-
-
-itemContent.insertAdjacentHTML("afterbegin" ,produitStructure);
-
-document.querySelector("#colors").insertAdjacentHTML("beforeend", `
-
-    ${product.colors.map((color)=>{
+            //get data from local storage and set it as empty array if it's not exist
+            // then try to parse saved string as array
+        try {
+            const savedCartData = localStorage.getItem(localStorageCartKey) || "[]";
+            cartData = JSON.parse(savedCartData);
+            
+        } catch (error) {
+            
+        }
         
-        return `<option  value=${color}>${color}</option>`;
+        // check if product with same id and color already exist in cart - then just increase quantity
+        let isExist = false;
+        for (let index = 0; index < cartData.length; index++) {
+            const product = cartData[index];
+            if (product && product.id && product.color === productOption.color && product.id===productOption.id) {
+                product.quantity = product.quantity ? product.quantity += productOption.quantity : productOption.quantity;
+                isExist = true;
+                break;
+            }
+        }
 
-    })}
+        // if not exist - add it to cart as is
+        if (!isExist) {
+            cartData.push(productOption);
+        }
 
-`);
+        // save cart to local storage
+        localStorage.setItem(localStorageCartKey, JSON.stringify(cartData));
+
+
+    });
 
 });
 
-//----Le Panier----корзина//
-//Récuperation des données получение данных//
-//ID selection выбор id//
-
-const idForm = document.querySelector("#colors");
-console.log(idForm);
-
-
-
-
- //Button de panier selection кнопка корзины//
-const btn_Panier = document.querySelector("#addToCart");
-console.log(btn_Panier);
-
-// button добавление //
-btn_Panier.addEventListener("click", (event)=>{
-    event.preventDefault();
-//le Choix d'utilisateur var выбор пользователя//
-const choisForm = idForm.value;
-    console.log(choisForm);   
-
-     //Recuperation des valeurs получение значений//
-let productOption = {
-    name: productId.name,
-    colors: choisForm, 
-    price: productId,
-    idProduct: productId._id,
-    quantite:
-}
-
-});
 
 
 
